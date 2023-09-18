@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Task and Time Tracking</title>
+  <style>
+    /* General Styles */
+    body {
+  font-family: Arial, sans-serif;
+  background-color: rgba(240, 237, 237, 0.8); /* Black with 80% opacity */
+  color: #ffffff; /* White text */
+  margin: 0;
+  padding: 0;
+}
+
+#container {
+  max-width: 2000px;
+  margin: auto;
+  padding: 5px;
+  background-color: rgb(0, 0, 0); /* White with 90% opacity */
+  box-shadow: 0 0 10px rgba(8, 8, 8, 0);
+}
+    h1 {
+      color: #ffffff;
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+
+    /* Input & Button Styles */
+    input, select, button {
+      margin: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    /* Table Styles */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+
+    /* Progress Bar Styles */
+    .progress-bar {
+      width: 100%;
+      background-color: #ccc;
+    }
+
+    .progress {
+      text-align: center;
+      color: white;
+      height: 20px;
+    }
+
+    /* Pagination Styles */
+    #prevPage, #nextPage {
+      margin: 20px 5px;
+    }
+
+    /* Danger button for data deletion */
+    #deleteAllData {
+      background-color: red;
+    }
+
+    #deleteAllData:hover {
+      background-color: darkred;
+    }
+
+   /* Translucent Page Overlay */
+body::before {
+  content: "";
+  position: fixed; /* Fixed position */
+  top: 0;
+  left: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  background-color: rgba(0, 0, 0, 0.5); /* Black with 50% opacity */
+  z-index: -1; /* Sit on top */
+}
+ 
+body {
+  background-color: rgba(0, 0, 0, 0.3); /* Black with 30% opacity */
+}
+
+
+#digitalClock {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px #fff;
+}
+
+
+  </style>
+</head>
+<body>
+  <div id="container">
+    <h1>Task and Time Tracking</h1>
+    <div id="digitalClock"></div>
+    <!-- rest of your code -->
+  </div>
+     
+      
+
+
+  <!-- Entry Sections -->
+  <div id="entry-sections">
+    <input type="text" id="employeeName" placeholder="Employee's Name">
+    <input type="number" id="idNumber" placeholder="ID Number">
+    <input type="text" id="organizationName" placeholder="Organization's Name">
+    <input type="text" id="projectType" placeholder="Project Type">
+    <input type="text" id="taskDescription" placeholder="Task Description">
+      
+      <button id="clockIn">Clock-in</button>
+      <select id="taskStatus">
+        <option value="" selected>Select Task Status</option> <!-- Default option -->
+        <option value="0">Incomplete</option>
+        <option value="50">Half-way done</option>
+        <option value="75">Near completion</option>
+        <option value="100">Complete</option>
+      </select>
+      <button id="clockOut">Clock-out</button>
+      
+  </div>
+
+  <!-- Table -->
+  <input type="text" id="search" placeholder="Search by Employee's Name">
+  <button id="goSearch">Go</button>
+  <select id="sortBy">
+    <option value="" selected>Sort By...</option>
+    <option value="employeeName">Employee's Name</option>
+    <option value="organizationName">Organization's Name</option>
+    <option value="idNumber">ID Number</option>
+    <option value="totalHours">Total Hours Worked</option>
+  </select>
+  <button id="sort">Sort</button>
+  <select id="filterBy">
+    <option value="" selected>Filter By Task Status...</option>
+    <option value="0">Incomplete</option>
+    <option value="50">Half-way done</option>
+    <option value="75">Near completion</option>
+    <option value="100">Complete</option>
+  </select>
+  <button id="filter">Filter</button>
+  <button id="clearDisplay">Clear Display</button>
+  <button id="downloadCSV">Download CSV File</button>
+  
+  <table id="taskTable">
+    <thead>
+      <tr>
+        <th>Employee's Name</th>
+        <th>ID Number</th>
+        <th>Organization's Name</th>
+        <th>Project Type</th>
+        <th>Task Description</th>
+        <th>Task Status</th>
+        <th>Clock In</th>
+        <th>Clock Out</th>
+        <th>Total Hours Worked</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Table rows will go here -->
+    </tbody>
+  </table>
+
+  <!-- Pagination -->
+  <button id="prevPage">Previous</button>
+  <button id="nextPage">Next</button>
+    <button id="deleteAllData" style="float: right;">Delete All Data</button>
+  
+  <script>
+    let tableData = [];
+    let currentPage = 0;
+    const rowsPerPage = 5;
+
+// Load data from localStorage if available
+if(localStorage.getItem('tableData')) {
+      tableData = JSON.parse(localStorage.getItem('tableData'));
+      refreshTable();
+    }
+    
+    function clearEntryFields() {
+      document.getElementById("employeeName").value = '';
+      document.getElementById("idNumber").value = '';
+      document.getElementById("organizationName").value = '';
+      document.getElementById("projectType").value = '';
+      document.getElementById("taskDescription").value = '';
+      document.getElementById("taskStatus").value = "";
+    }
+
+    document.getElementById("clockIn").addEventListener("click", function() {
+  const idNumber = document.getElementById("idNumber").value;
+  const organizationName = document.getElementById("organizationName").value;
+
+ // Check if already clocked in
+ const existingRecord = findLatestClockInForId(idNumber, organizationName);
+  if (existingRecord) {
+    alert("You're already clocked in. Please clock out before clocking in again.");
+    return;
+  }
+
+  
+  let now = new Date();
+  let record = {
+    employeeName: document.getElementById("employeeName").value,
+    idNumber: idNumber,
+    organizationName: organizationName,
+    projectType: document.getElementById("projectType").value,
+    taskDescription: document.getElementById("taskDescription").value,
+    taskStatus: null,
+    clockIn: now.toDateString() + " " + now.toTimeString().split(' ')[0],
+    clockOut: null,
+    totalHours: null
+  };
+  tableData.unshift(record);
+  refreshTable();
+  clearEntryFields();  // Clear the fields after clocking in
+// Save updated tableData to localStorage
+document.getElementById("taskStatus").value = "";
+localStorage.setItem('tableData', JSON.stringify(tableData));
+refreshTable();
+  clearEntryFields();  // Clear the fields after clocking in
+    });
+
+
+    document.getElementById("clockOut").addEventListener("click", function() {
+  const idNumber = document.getElementById("idNumber").value;
+  const organizationName = document.getElementById("organizationName").value;
+  const taskStatus = document.getElementById("taskStatus").value;
+
+  const record = findLatestClockInForId(idNumber, organizationName);
+  if (record) {
+    let now = new Date();
+    record.clockOut = now.toDateString() + " " + now.toTimeString().split(' ')[0];
+    record.taskStatus = taskStatus;
+
+    let diffMs = new Date(record.clockOut) - new Date(record.clockIn); // in milliseconds
+    let diffHrs = diffMs / (1000 * 60 * 60); // to hours
+    let hrs = Math.floor(diffHrs);
+    let mins = Math.round((diffHrs - hrs) * 60);
+
+    record.totalHours = `${hrs} hrs ${mins} mins`;
+
+    refreshTable();
+    clearEntryFields();  // Clear the fields after clocking out
+  } else {
+    alert("No open clock-in found for this ID and Organization.");
+  }
+  // Save updated tableData to localStorage
+  localStorage.setItem('tableData', JSON.stringify(tableData));
+  refreshTable();
+});
+
+
+function findLatestClockInForId(idNumber, organizationName) {
+  return tableData.find(record => {
+    return record.idNumber === idNumber &&
+      record.organizationName === organizationName &&
+      record.clockIn && !record.clockOut;
+  });
+}
+
+let displayedData = [...tableData];
+
+document.getElementById("goSearch").addEventListener("click", function() {
+      let searchTerm = document.getElementById("search").value.toLowerCase();
+      displayedData = tableData.filter(record => record.employeeName.toLowerCase().includes(searchTerm));
+      refreshTable(displayedData);
+    });
+
+    document.getElementById("sort").addEventListener("click", function() {
+      let sortBy = document.getElementById("sortBy").value;
+      displayedData.sort((a, b) => (a[sortBy] > b[sortBy]) ? 1 : -1);
+      refreshTable(displayedData);
+    });
+
+    document.getElementById("filter").addEventListener("click", function() {
+      let filterBy = document.getElementById("filterBy").value;
+      displayedData = tableData.filter(record => record.taskStatus === filterBy);
+      refreshTable(displayedData);
+    });
+
+    document.getElementById("clearDisplay").addEventListener("click", function() {
+      displayedData = [...tableData];
+      refreshTable(displayedData);
+    });
+
+    document.getElementById("downloadCSV").addEventListener("click", function() {
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += Object.keys(tableData[0]).join(",") + "\r\n";
+
+      tableData.forEach(record => {
+        csvContent += Object.values(record).join(",") + "\r\n";
+      });
+
+      let encodedUri = encodeURI(csvContent);
+      let link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "table_data.csv");
+      document.body.appendChild(link);  // Required for Firefox
+      link.click();  // Triggers download
+    });
+
+    function refreshTable(dataToDisplay = tableData) {
+  let tbody = document.getElementById("taskTable").getElementsByTagName("tbody")[0];
+  tbody.innerHTML = "";
+  for (let i = currentPage * rowsPerPage; i < Math.min((currentPage + 1) * rowsPerPage, dataToDisplay.length); i++) {
+    let row = tbody.insertRow();
+    for (let key in dataToDisplay[i]) {
+      let cell = row.insertCell();
+      if (key === "taskStatus") {
+        let progressBar = document.createElement("div");
+        progressBar.className = "progress-bar";
+        let progress = document.createElement("div");
+        progress.className = "progress";
+        progress.style.width = dataToDisplay[i][key] + "%";
+        progress.innerHTML = dataToDisplay[i][key] + "%";
+        // Change color based on task status value
+        if (dataToDisplay[i][key] <= 25) {
+          progress.style.backgroundColor = "black";
+        } else if (dataToDisplay[i][key] <= 50) {
+          progress.style.backgroundColor = "red";
+        } else if (dataToDisplay[i][key] <= 75) {
+          progress.style.backgroundColor = "orange";
+        } else {
+          progress.style.backgroundColor = "green";
+        }
+
+        progressBar.appendChild(progress);
+        cell.appendChild(progressBar);
+      } else {
+        cell.innerHTML = dataToDisplay[i][key];
+      }
+    }
+  }
+}
+
+document.getElementById("goSearch").addEventListener("click", function() {
+  let searchTerm = document.getElementById("search").value.toLowerCase();
+  displayedData = tableData.filter(record => record.employeeName.toLowerCase().includes(searchTerm));
+  refreshTable(displayedData);
+});
+
+document.getElementById("sort").addEventListener("click", function() {
+  let sortBy = document.getElementById("sortBy").value;
+  displayedData.sort((a, b) => (a[sortBy] > b[sortBy]) ? 1 : -1);
+  refreshTable(displayedData);
+});
+
+document.getElementById("filter").addEventListener("click", function() {
+  let filterBy = document.getElementById("filterBy").value;
+  displayedData = tableData.filter(record => record.taskStatus === filterBy);
+  refreshTable(displayedData);
+});
+
+document.getElementById("clearDisplay").addEventListener("click", function() {
+  displayedData = [...tableData];
+  refreshTable(displayedData);
+// Reset the search field
+document.getElementById("search").value = '';
+
+// Reset the sort dropdown to its default value (assuming the default is an empty string or some default value)
+document.getElementById("sortBy").value = '';
+
+// Reset the filter dropdown to its default value (assuming the default is an empty string or some default value)
+document.getElementById("filterBy").value = '';
+
+});
+
+// Previous Page Event Listener
+document.getElementById("prevPage").addEventListener("click", function() {
+  if (currentPage > 0) {
+    currentPage--;
+    refreshTable(displayedData);
+  }
+});
+
+// Next Page Event Listener
+document.getElementById("nextPage").addEventListener("click", function() {
+  if (currentPage < Math.ceil(displayedData.length / rowsPerPage) - 1) {
+    currentPage++;
+    refreshTable(displayedData);
+  }
+});
+
+document.getElementById("deleteAllData").addEventListener("click", function() {
+  const password = prompt("Enter password to delete all data:");
+  const userConfirmation = window.confirm("Are you sure you want to delete all data?");
+  if (password === "Admin@123") {
+    if (confirm("Are you sure you want to delete all data? This action is irreversible.")) {
+      tableData = [];
+      localStorage.setItem('tableData', JSON.stringify(tableData));
+      refreshTable();
+      alert("All data has been deleted.");
+    }
+  } else {
+    alert("Incorrect password.");
+  }
+});
+
+function updateClock() {
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  
+  document.getElementById("digitalClock").innerText = `${hours}:${minutes}:${seconds}`;
+}
+
+// Update the clock every 1 second
+setInterval(updateClock, 1000);
+
+
+  </script>
+</body>
+</html>

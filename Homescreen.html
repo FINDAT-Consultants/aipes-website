@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Homescreen Menu</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-image: url('1.png'); /* Replace with your actual image file path or URL */
+      background-size: cover;  /* Cover the entire viewport */
+      background-position: center; /* Center the image */
+      background-repeat: no-repeat; /* Do not repeat the image */
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      background-color: black; /* Set the background color to black */
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #000000;
+      padding: 20px;
+    }
+
+
+    /* Style for the small image at the top-left */
+    .top-left-image {
+      position: absolute; /* Positioning it absolutely */
+      top: 0; /* 0 distance from the top */
+      left: 0; /* 0 distance from the left */
+      width: 100px; /* Setting the width */
+      height: auto; /* Keeping the aspect ratio */
+    }
+
+    #menuBar {
+      list-style: none;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 0;
+    }
+
+    .menu-button {
+      display: flex;
+      align-items: center;
+      background: linear-gradient(to bottom, #934caf, #8e3f38);
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      color: white;
+      padding: 16px 24px;
+      text-align: center;
+      text-decoration: none;
+      font-size: 18px;
+      margin: 16px;
+      transition: all 0.4s ease;
+      cursor: pointer;
+      width: 200px;
+    }
+
+    .menu-button i {
+      margin-right: 16px;
+      font-size: 24px;
+    }
+
+    .menu-button:hover {
+      background: linear-gradient(to bottom, #388E3C, #4CAF50);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+
+    .menu-button:active {
+      transform: scale(0.98);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .menu-button:focus {
+      outline: none;
+    }
+
+    /* This will set the background color for the entire page to a translucent shade of black */
+body {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* This will set the image at the top-left corner of the page */
+.top-left-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100px;
+}
+
+/* This will style the container div */
+.container {
+  /* You can set the width and height as per your requirement */
+  width: 80%;
+  margin: auto;
+
+  /* Adds a translucent background */
+  background-color: rgba(0, 0, 0, 0.7);
+
+  /* Adds some padding */
+  padding: 20px;
+
+  /* Rounded corners */
+  border-radius: 15px;
+}
+
+/* This will style the h2 element */
+.container h2 {
+  /* Sets the text color to white */
+  color: white;
+
+  /* Center aligns the text */
+  text-align: center;
+
+  /* Adds a text shadow for better visibility */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+  </style>
+</head>
+<body>
+   <!-- Small image at the top-left -->
+   <img src="Logo.png" alt="Small Image" class="top-left-image">
+
+   <div class="container">
+    <h2>Homescreen Menu</h2>
+   </div>
+
+  <ul id="menuBar">
+    <li><a href="Time  Management.html" class="menu-button" onclick="buttonClicked(event)"><i class="fas fa-clock"></i> Time & Task Management</a></li>
+    <li><a href="Directory.html" class="menu-button" onclick="buttonClicked(event)"><i class="fas fa-user"></i> Profile              Directory</a></li>
+  </ul>
+  
+  <script>
+    function buttonClicked(event) {
+      event.target.classList.add('menu-button-clicked');
+      setTimeout(() => {
+        event.target.classList.remove('menu-button-clicked');
+      }, 400);
+    }
+  </script>
+</body>
+</html>

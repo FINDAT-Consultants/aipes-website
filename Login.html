@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Login Page</title>
+    <style>
+        body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-image: 
+      linear-gradient(to right, rgba(247, 247, 247, 0), rgba(255, 255, 255, 0)),
+      url('6.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .container {
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 0, 0, 0.4); /* Red, transparent */
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    width: 400px;
+    text-align: center;
+    position: relative;
+  }
+  
+  .small-picture {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  h1 {
+    margin-bottom: 24px;
+    color: #333;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+  }
+
+  input[type="text"],
+  input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    display: block;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: rgba(255, 255, 255, 0.6);
+  }
+
+  input[type="text"]:focus,
+  input[type="password"]:focus {
+    border-color: #007bff;
+  }
+
+  button {
+    background-color: rgba(0, 0, 0, 0.5); /* Transparent black */
+    color: white;
+    padding: 16px 24px;
+    margin-top: 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 18px;
+  }
+
+  button:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+
+  #registerBtn {
+    background-color: #6c757d;
+  }
+
+  #registerBtn:hover {
+    background-color: #5a6268;
+  }
+
+  .caption {
+    font-size: 12px; /* Small font size */
+    color: rgb(255, 255, 255);
+  }
+
+  .ai-pesona {
+    font-family: 'Georgia, Times, "Times New Roman", serif'; /* Add a nice font */
+    color: black;
+  }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <img src="Logo.png" alt="Small Picture" class="small-picture">
+        <h1 class="ai-pesona">AI Pesona</h1>
+        <label for="email"><b></b></label>
+        <input type="text" placeholder="Enter Email" id="email" required>
+
+        <label for="password"><b></b></label>
+        <input type="password" placeholder="Enter Password" id="password" required>
+
+        <button id="loginBtn">Login</button>
+        <!-- Your other container content here -->
+        <span class="caption">Powered by Findat Consultants</span>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+    const employees = JSON.parse(localStorage.getItem('employees')) || [];
+
+    const loginBtn = document.getElementById('loginBtn');
+
+    loginBtn.addEventListener('click', function () {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        // Find an employee with the entered email and password
+        const employee = employees.find(emp => emp.email === email && emp.password === password);
+
+        if (employee) {
+            alert("Logged in successfully!");
+            localStorage.setItem('loggedIn', true);
+            window.location.href = "Homescreen.html";  // Redirect to employee directory page
+        } else {
+            alert("Invalid email or password.");
+        }
+    });
+});
+
+
+    </script>
+
+</body>
+
+</html>
